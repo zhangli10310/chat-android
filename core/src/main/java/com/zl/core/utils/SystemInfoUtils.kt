@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.provider.Settings
-import android.support.annotation.RequiresPermission
+import androidx.annotation.RequiresPermission
 import android.app.Activity
 import android.telephony.TelephonyManager
 import java.util.*

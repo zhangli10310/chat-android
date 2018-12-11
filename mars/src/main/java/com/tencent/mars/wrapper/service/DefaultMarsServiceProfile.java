@@ -20,7 +20,7 @@ package com.tencent.mars.wrapper.service;
  * Created by zhaoyuan on 2016/11/16.
  */
 
-public class DebugMarsServiceProfile implements MarsServiceProfile {
+public class DefaultMarsServiceProfile implements MarsServiceProfile {
 
     public static final short MAGIC = 0x0110;
     public static final short PRODUCT_ID = 200;

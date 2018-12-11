@@ -1,6 +1,6 @@
 package com.zl.core
 
-import android.support.multidex.MultiDexApplication
+import androidx.multidex.MultiDexApplication
 
 /**
  *

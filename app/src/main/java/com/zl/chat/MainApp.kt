@@ -34,6 +34,10 @@ class MainApp : BaseApplication() {
             Log.i(TAG, "app resume")
 //            BaseEvent.onForeground(true)
         }))
+
+
+
+        Log.i(TAG, "application started")
     }
 
     private fun initXlogEnv() {
