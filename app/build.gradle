@@ -1,8 +1,9 @@
 apply plugin: 'com.android.application'
 
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
+
+apply plugin: 'com.google.protobuf'
 
 android {
 
@@ -26,6 +27,18 @@ android {
         }
     }
 
+    android {
+        sourceSets {
+            main {
+                // 定义proto文件目录
+                proto {
+                    srcDir 'src/main/proto'
+                    include '**/*.proto'
+                }
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -39,4 +52,24 @@ dependencies {
 
     implementation project(':core')
     implementation project(':mars')
+
+    implementation "com.google.protobuf:protobuf-lite:$protobufVersion"
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:$protobufVersion"
+    }
+    plugins {
+        javalite {
+            artifact = "com.google.protobuf:protoc-gen-javalite:$protobufVersion"
+        }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.plugins {
+                javalite {}
+            }
+        }
+    }
 }

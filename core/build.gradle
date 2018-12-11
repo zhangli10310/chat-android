@@ -67,6 +67,10 @@ dependencies {
     kapt "android.arch.persistence.room:compiler:$roomVersion"
 
     api 'com.android.support:multidex:1.0.3'
+
+    api ('com.squareup.retrofit2:converter-protobuf:2.2.0') {
+        exclude group: 'com.google.protobuf', module: 'protobuf-java'
+    }
 }
 repositories {
     mavenCentral()

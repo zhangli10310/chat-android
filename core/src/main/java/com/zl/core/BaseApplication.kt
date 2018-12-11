@@ -10,8 +10,12 @@ import android.support.multidex.MultiDexApplication
  */
 open class BaseApplication : MultiDexApplication() {
 
+    companion object {
+        lateinit var instance: BaseApplication
+    }
+
     override fun onCreate() {
         super.onCreate()
-
+        instance = this
     }
 }
