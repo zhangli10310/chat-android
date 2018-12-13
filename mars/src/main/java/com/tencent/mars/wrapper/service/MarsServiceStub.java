@@ -5,7 +5,7 @@ import com.tencent.mars.app.AppLogic;
 import com.tencent.mars.sdt.SdtLogic;
 import com.tencent.mars.stn.StnLogic;
 import com.tencent.mars.xlog.Log;
-import com.zl.mars.TaskHandler;
+import com.zl.mars.remote.TaskHandler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
