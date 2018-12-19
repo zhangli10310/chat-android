@@ -1,14 +1,18 @@
 package com.tencent.mars.wrapper.service;
 
 import android.content.Context;
+import android.os.RemoteException;
 import com.tencent.mars.app.AppLogic;
 import com.tencent.mars.sdt.SdtLogic;
 import com.tencent.mars.stn.StnLogic;
 import com.tencent.mars.xlog.Log;
+import com.zl.mars.remote.MarsTaskWrapper;
 import com.zl.mars.remote.TaskHandler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * <p></p>
@@ -23,6 +27,31 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
 
     public MarsServiceStub(Context context) {
         this.context = context;
+    }
+
+
+    @Override
+    public int send(MarsTaskWrapper taskWrapper) throws RemoteException {
+
+        StnLogic.Task task = new StnLogic.Task(StnLogic.Task.EShort, 0, "", null);
+
+        task.cmdID = taskWrapper.getCmdId();
+        task.channelSelect = taskWrapper.getChannelSelect();
+
+        task.shortLinkHostList = new ArrayList<>();
+        task.shortLinkHostList.add(taskWrapper.getHost());
+        task.cgi = taskWrapper.getCgiPath();
+
+        StnLogic.startTask(task);
+
+        if (StnLogic.hasTask(task.taskID)) {
+            Log.i(TAG, "stn task started with id %d", task.taskID);
+
+        } else {
+            Log.e(TAG, "stn task start failed with id %d", task.taskID);
+        }
+
+        return task.taskID;
     }
 
     @Override
@@ -81,12 +110,26 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
 
     @Override
     public boolean req2Buf(int taskID, Object userContext, ByteArrayOutputStream reqBuffer, int[] errCode, int channelSelect) {
+
+        Log.i(TAG, "req2Buf: taskId" + taskID);
+        try {
+            reqBuffer.write("ok".getBytes());
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public int buf2Resp(int taskID, Object userContext, byte[] respBuffer, int[] errCode, int channelSelect) {
-        return 0;
+        try {
+            String s = new String(respBuffer);
+            Log.i(TAG, "buf2Resp: " + s);
+        } catch (Exception e) {
+
+        }
+        return StnLogic.RESP_FAIL_HANDLE_TASK_END;
     }
 
     @Override

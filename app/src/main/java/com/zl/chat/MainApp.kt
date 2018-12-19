@@ -30,18 +30,18 @@ class MainApp : BaseApplication() {
         registerActivityLifecycleCallbacks(BackgroundActivityLifecycleCallbacks({
             //onBackground
             Log.i(TAG, "app background")
-            BaseEvent.onForeground(false)
+//            BaseEvent.onForeground(false)
             Log.appenderClose()
         }, {
             //onResume
             Log.i(TAG, "app resume")
-            BaseEvent.onForeground(true)
+//            BaseEvent.onForeground(true)
         }))
 
         MarsService.setProfileFactory {
             object :DefaultMarsServiceProfile() {
                 override fun longLinkHost(): String {
-                    return "192.168.63.162"
+                    return "192.168.63.45"
                 }
             }
         }

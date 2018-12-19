@@ -5,12 +5,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.IBinder;
-import android.os.Message;
+import android.os.*;
 import com.tencent.mars.wrapper.service.MarsService;
 import com.tencent.mars.xlog.Log;
+import com.zl.mars.remote.MarsTaskWrapper;
 import com.zl.mars.remote.TaskHandler;
 
 /**
@@ -22,7 +20,7 @@ public class MarsServiceProxy implements ServiceConnection {
 
     private static final String TAG = "MarsServiceProxy";
 
-    private static MarsServiceProxy inst;
+    public static MarsServiceProxy inst;
 
     private Handler mHandler;
     private TaskHandler taskHandler;
@@ -40,18 +38,22 @@ public class MarsServiceProxy implements ServiceConnection {
         this.context = context.getApplicationContext();
         HandlerThread thread = new HandlerThread("handleTaskThread");
         thread.start();
-        mHandler = new Handler(thread.getLooper()) {
+        mHandler = new Handler(thread.getLooper());
+        mHandler.postDelayed(new Runnable() {
             @Override
-            public void handleMessage(Message msg) {
-                handleTask();
+            public void run() {
+                startService();
             }
-        };
-        mHandler.sendEmptyMessageDelayed(1, 50);
+        }, 50);
     }
 
-    private void handleTask() {
+    private void handleTask(MarsTaskWrapper taskWrapper) {
         if (startService()) {
-
+            try {
+                taskHandler.send(taskWrapper);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -85,5 +87,14 @@ public class MarsServiceProxy implements ServiceConnection {
 
         // TODO: need reconnect ?
         Log.d(TAG, "remote mars service disconnected");
+    }
+
+    public void send(final MarsTaskWrapper taskWrapper) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                handleTask(taskWrapper);
+            }
+        });
     }
 }
