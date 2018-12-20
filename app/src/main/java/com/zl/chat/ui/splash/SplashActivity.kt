@@ -4,6 +4,7 @@ import android.Manifest
 import android.os.Bundle
 import com.tencent.mars.stn.StnLogic
 import com.tencent.mars.wrapper.remote.MarsServiceProxy
+import com.tencent.mars.wrapper.remote.PushMessageHandler
 import com.tencent.mars.xlog.Log
 import com.zl.chat.R
 import com.zl.core.base.BaseActivity
@@ -19,6 +20,8 @@ import kotlinx.android.synthetic.main.activity_splash.*
 class SplashActivity : BaseActivity() {
 
     private val TAG = SplashActivity::class.java.simpleName
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,5 +56,20 @@ class SplashActivity : BaseActivity() {
 
             })
         }
+
+    }
+
+    private val handler: PushMessageHandler = PushMessageHandler {
+        showToastSafe(String(it.buffer))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        MarsServiceProxy.inst.addPushMessageHandler(handler)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        MarsServiceProxy.inst.removePushMessageHandler(handler)
     }
 }

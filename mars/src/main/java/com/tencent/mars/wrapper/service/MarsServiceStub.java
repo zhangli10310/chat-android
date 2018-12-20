@@ -2,10 +2,12 @@ package com.tencent.mars.wrapper.service;
 
 import android.content.Context;
 import android.os.RemoteException;
+import com.tencent.mars.BaseEvent;
 import com.tencent.mars.app.AppLogic;
 import com.tencent.mars.sdt.SdtLogic;
 import com.tencent.mars.stn.StnLogic;
 import com.tencent.mars.xlog.Log;
+import com.zl.mars.remote.MarsPushMessageFilter;
 import com.zl.mars.remote.MarsTaskWrapper;
 import com.zl.mars.remote.TaskHandler;
 
@@ -13,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * <p></p>
@@ -24,6 +27,8 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
     private static final String TAG = "MarsServiceStub";
 
     private Context context;
+
+    private ConcurrentLinkedQueue<MarsPushMessageFilter> filters = new ConcurrentLinkedQueue<>();
 
     public MarsServiceStub(Context context) {
         this.context = context;
@@ -52,6 +57,22 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
         }
 
         return task.taskID;
+    }
+
+    @Override
+    public void setForeground(boolean foreground) throws RemoteException {
+        BaseEvent.onForeground(foreground);
+    }
+
+    @Override
+    public void registerMarsPushMessageFilter(MarsPushMessageFilter filter) throws RemoteException {
+        filters.remove(filter);
+        filters.add(filter);
+    }
+
+    @Override
+    public void unregisterMarsPushMessageFilter(MarsPushMessageFilter filter) throws RemoteException {
+        filters.remove(filter);
     }
 
     @Override
@@ -90,22 +111,32 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
 
     @Override
     public void reportSignalDetectResults(String resultsJson) {
-
+        Log.d(TAG, "reportSignalDetectResults: " + resultsJson);
     }
 
     @Override
     public boolean makesureAuthed() {
+        Log.d(TAG, "makesureAuthed: ");
         return true;//权限验证直接通过
     }
 
     @Override
     public String[] onNewDns(String host) {
+        Log.d(TAG, "onNewDns: ");
         return null;
     }
 
     @Override
     public void onPush(int cmdid, byte[] data) {
-        Log.d(TAG, "onPush id:" + cmdid + ",length:" + data.length);
+        Log.d(TAG, "onPush id:" + cmdid + ",data:" + new String(data));
+
+        for (MarsPushMessageFilter filter : filters) {
+            try {
+                filter.onRecv(cmdid, data);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -150,26 +181,38 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
 
     @Override
     public int getLongLinkIdentifyCheckBuffer(ByteArrayOutputStream identifyReqBuf, ByteArrayOutputStream hashCodeBuffer, int[] reqRespCmdID) {
+
+//        try {
+//            identifyReqBuf.write("check".getBytes());
+//            hashCodeBuffer.write("check".hashCode());
+//            reqRespCmdID[0] = 1;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
         return StnLogic.ECHECK_NEVER;
     }
 
     @Override
     public boolean onLongLinkIdentifyResp(byte[] buffer, byte[] hashCodeBuffer) {
+        Log.d(TAG, "onLongLinkIdentifyResp: " + new String(buffer));
         return false;
     }
 
     @Override
     public void requestDoSync() {
-
+        Log.d(TAG, "requestDoSync: ");
     }
 
     @Override
     public String[] requestNetCheckShortLinkHosts() {
+        Log.d(TAG, "requestNetCheckShortLinkHosts: ");
         return new String[0];
     }
 
     @Override
     public boolean isLogoned() {
+        Log.d(TAG, "isLogoned: ");
         return false;
     }
 

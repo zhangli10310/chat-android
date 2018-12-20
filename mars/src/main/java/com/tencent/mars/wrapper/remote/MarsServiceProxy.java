@@ -8,8 +8,12 @@ import android.content.ServiceConnection;
 import android.os.*;
 import com.tencent.mars.wrapper.service.MarsService;
 import com.tencent.mars.xlog.Log;
+import com.zl.mars.remote.MarsPushMessageFilter;
 import com.zl.mars.remote.MarsTaskWrapper;
 import com.zl.mars.remote.TaskHandler;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * <p></p>
@@ -24,6 +28,21 @@ public class MarsServiceProxy implements ServiceConnection {
 
     private Handler mHandler;
     private TaskHandler taskHandler;
+
+    private ConcurrentLinkedQueue<PushMessageHandler> pushMessageHandlerQueue = new ConcurrentLinkedQueue<>();
+    private MarsPushMessageFilter filter = new MarsPushMessageFilter.Stub() {
+
+        @Override
+        public boolean onRecv(int cmdId, byte[] buffer) throws RemoteException {
+
+            for (PushMessageHandler messageHandler : pushMessageHandlerQueue) {
+                PushMessage message = new PushMessage(cmdId, buffer);
+                messageHandler.process(message);
+            }
+
+            return false;
+        }
+    };
 
     private Context context;
 
@@ -75,6 +94,8 @@ public class MarsServiceProxy implements ServiceConnection {
         Log.d(TAG, "remote mars service connected");
         try {
             taskHandler = TaskHandler.Stub.asInterface(service);
+
+            taskHandler.registerMarsPushMessageFilter(filter);
         } catch (Exception e) {
             e.printStackTrace();
             taskHandler = null;
@@ -83,6 +104,11 @@ public class MarsServiceProxy implements ServiceConnection {
 
     @Override
     public void onServiceDisconnected(ComponentName name) {
+        try {
+            taskHandler.unregisterMarsPushMessageFilter(filter);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         taskHandler = null;
 
         // TODO: need reconnect ?
@@ -96,5 +122,25 @@ public class MarsServiceProxy implements ServiceConnection {
                 handleTask(taskWrapper);
             }
         });
+    }
+
+    public void setForeground(boolean foreground) {
+        if (startService()) {
+            try {
+                taskHandler.setForeground(foreground);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void addPushMessageHandler(PushMessageHandler handler) {
+        pushMessageHandlerQueue.remove(handler);
+        pushMessageHandlerQueue.add(handler);
+    }
+
+    public void removePushMessageHandler(PushMessageHandler handler) {
+        pushMessageHandlerQueue.remove(handler);
+
     }
 }

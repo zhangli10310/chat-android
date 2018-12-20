@@ -27,17 +27,6 @@ class MainApp : BaseApplication() {
 
         initXlogEnv()
 
-        registerActivityLifecycleCallbacks(BackgroundActivityLifecycleCallbacks({
-            //onBackground
-            Log.i(TAG, "app background")
-//            BaseEvent.onForeground(false)
-            Log.appenderClose()
-        }, {
-            //onResume
-            Log.i(TAG, "app resume")
-//            BaseEvent.onForeground(true)
-        }))
-
         MarsService.setProfileFactory {
             object :DefaultMarsServiceProfile() {
                 override fun longLinkHost(): String {
@@ -46,6 +35,19 @@ class MainApp : BaseApplication() {
             }
         }
         MarsServiceProxy.init(this)
+
+        registerActivityLifecycleCallbacks(BackgroundActivityLifecycleCallbacks({
+            //onBackground
+            Log.i(TAG, "app background")
+
+            MarsServiceProxy.inst.setForeground(false)
+
+            Log.appenderClose()
+        }, {
+            //onResume
+            Log.i(TAG, "app resume")
+            MarsServiceProxy.inst.setForeground(true)
+        }))
 
         Log.i(TAG, "application started")
     }
