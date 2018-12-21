@@ -15,6 +15,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -27,6 +29,8 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
     private static final String TAG = "MarsServiceStub";
 
     private Context context;
+
+    private static Map<Integer, MarsTaskWrapper> TASK_ID_TO_WRAPPER = new ConcurrentHashMap<>();
 
     private ConcurrentLinkedQueue<MarsPushMessageFilter> filters = new ConcurrentLinkedQueue<>();
 
@@ -46,6 +50,11 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
         task.shortLinkHostList = new ArrayList<>();
         task.shortLinkHostList.add(taskWrapper.getHost());
         task.cgi = taskWrapper.getCgiPath();
+
+        task.sendOnly = taskWrapper.sendOnly();
+        task.needAuthed = taskWrapper.needAuthed();
+
+        TASK_ID_TO_WRAPPER.put(task.taskID, taskWrapper);
 
         StnLogic.startTask(task);
 
@@ -141,12 +150,17 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
 
     @Override
     public boolean req2Buf(int taskID, Object userContext, ByteArrayOutputStream reqBuffer, int[] errCode, int channelSelect) {
-
         Log.i(TAG, "req2Buf: taskId" + taskID);
+        MarsTaskWrapper wrapper = TASK_ID_TO_WRAPPER.get(taskID);
+
+        if (wrapper == null) {
+            Log.e(TAG, "invalid req2Buf for task, taskID=%d", taskID);
+            return false;
+        }
         try {
-            reqBuffer.write("ok".getBytes());
+            reqBuffer.write(wrapper.req2buf());
             return true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
@@ -154,18 +168,38 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
 
     @Override
     public int buf2Resp(int taskID, Object userContext, byte[] respBuffer, int[] errCode, int channelSelect) {
-        try {
-            String s = new String(respBuffer);
-            Log.i(TAG, "buf2Resp: " + s);
-        } catch (Exception e) {
+        MarsTaskWrapper wrapper = TASK_ID_TO_WRAPPER.get(taskID);
 
+        if (wrapper == null) {
+            Log.e(TAG, "buf2Resp: wrapper not found for stn task, taskID=%", taskID);
+            return StnLogic.RESP_FAIL_HANDLE_TASK_END;
+        }
+
+        try {
+            return wrapper.buf2resp(respBuffer);
+        } catch (Exception e) {
+            Log.e(TAG, "remote wrapper disconnected, clean this context, taskID=%d", taskID);
+            TASK_ID_TO_WRAPPER.remove(taskID);
         }
         return StnLogic.RESP_FAIL_HANDLE_TASK_END;
     }
 
     @Override
     public int onTaskEnd(int taskID, Object userContext, int errType, int errCode) {
-        Log.i(TAG, "onTaskEnd: " + taskID + "," + userContext + "," + errType + "," + errCode);
+        final MarsTaskWrapper wrapper = TASK_ID_TO_WRAPPER.remove(taskID);
+        if (wrapper == null) {
+            Log.w(TAG, "stn task onTaskEnd callback may fail, null wrapper, taskID=%d", taskID);
+            return 0; // TODO: ???
+        }
+
+        try {
+            wrapper.onTaskEnd(errType, errCode);
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+
+        }
+
         return 0;
     }
 
@@ -219,5 +253,12 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
     @Override
     public void reportTaskProfile(String taskString) {
         Log.d(TAG, "reportTaskProfile: " + taskString);
+    }
+
+//    @Override
+    public void cancel(int taskID) throws RemoteException {
+        Log.d(TAG, "cancel wrapper with taskID=%d using stn stop", taskID);
+        StnLogic.stopTask(taskID);
+        TASK_ID_TO_WRAPPER.remove(taskID); // TODO: check return
     }
 }

@@ -14,6 +14,8 @@
 
 package com.tencent.mars.wrapper.remote;
 
+import com.google.gson.Gson;
+
 public class PushMessage {
 
     public PushMessage(int cmdId, byte[] buffer) {
@@ -24,5 +26,14 @@ public class PushMessage {
     public int cmdId;
 
     public byte[] buffer;
+
+    public String getMessageString() {
+        return new String(buffer);
+    }
+
+    public <T> T toMessage(Class<T> tClass) {
+        Gson gson = new Gson();
+        return gson.fromJson(getMessageString(), tClass);
+    }
 
 }

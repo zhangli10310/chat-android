@@ -68,7 +68,7 @@ dependencies {
 
     api "androidx.paging:paging-runtime:$pagingVersion"
 
-    api 'androidx.multidex:multidex:2.0.0'
+    api 'androidx.multidex:multidex:2.0.1'
 
     api ('com.squareup.retrofit2:converter-protobuf:2.2.0') {
         exclude group: 'com.google.protobuf', module: 'protobuf-java'

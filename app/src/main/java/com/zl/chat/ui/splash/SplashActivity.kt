@@ -1,15 +1,12 @@
 package com.zl.chat.ui.splash
 
 import android.Manifest
+import android.content.Intent
 import android.os.Bundle
-import com.tencent.mars.stn.StnLogic
-import com.tencent.mars.wrapper.remote.MarsServiceProxy
-import com.tencent.mars.wrapper.remote.PushMessageHandler
-import com.tencent.mars.xlog.Log
 import com.zl.chat.R
+import com.zl.chat.service.NotificationService
+import com.zl.chat.ui.main.MainActivity
 import com.zl.core.base.BaseActivity
-import com.zl.mars.remote.MarsTaskWrapper
-import kotlinx.android.synthetic.main.activity_splash.*
 
 /**
  *
@@ -21,55 +18,17 @@ class SplashActivity : BaseActivity() {
 
     private val TAG = SplashActivity::class.java.simpleName
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
+        startService(Intent(this, NotificationService::class.java))
+
         requestPermission(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-
+            if (it) {
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+            }
         }
-
-        img.setOnClickListener {
-            MarsServiceProxy.inst.send(object : MarsTaskWrapper.Stub() {
-
-                override fun getCmdId() = 9
-
-                override fun getChannelSelect() = StnLogic.Task.ELong
-
-                override fun getHost() = "192.168.63.45"
-
-                override fun getCgiPath() = "/go"
-
-                override fun req2buf(): ByteArray {
-                    return "go".toByteArray()
-                }
-
-                override fun buf2resp(buf: ByteArray?): Int {
-                    return 1
-                }
-
-                override fun onTaskEnd(errType: Int, errCode: Int) {
-                    Log.i(TAG, "onTaskEnd: $errCode")
-                }
-
-            })
-        }
-
-    }
-
-    private val handler: PushMessageHandler = PushMessageHandler {
-        showToastSafe(String(it.buffer))
-    }
-
-    override fun onResume() {
-        super.onResume()
-        MarsServiceProxy.inst.addPushMessageHandler(handler)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        MarsServiceProxy.inst.removePushMessageHandler(handler)
     }
 }

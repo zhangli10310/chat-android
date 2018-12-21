@@ -10,10 +10,10 @@
 
     <application>
 
-        <service android:name="com.tencent.mars.wrapper.service.MarsService"
-                 android:process=":marsservice"/>
+        <service android:name="com.tencent.mars.wrapper.service.CoreService"
+                 android:process=":push"/>
         <receiver
                 android:name="com.tencent.mars.BaseEvent$ConnectionReceiver"
-                android:process=":marsservice"/>
+                android:process=":push"/>
     </application>
 </manifest>

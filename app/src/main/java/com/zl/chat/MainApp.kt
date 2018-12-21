@@ -1,10 +1,9 @@
 package com.zl.chat
 
 import android.os.Environment
-import com.tencent.mars.BaseEvent
 import com.tencent.mars.wrapper.remote.MarsServiceProxy
 import com.tencent.mars.wrapper.service.DefaultMarsServiceProfile
-import com.tencent.mars.wrapper.service.MarsService
+import com.tencent.mars.wrapper.service.CoreService
 import com.tencent.mars.xlog.Log
 import com.tencent.mars.xlog.Xlog
 import com.zl.core.BackgroundActivityLifecycleCallbacks
@@ -27,7 +26,7 @@ class MainApp : BaseApplication() {
 
         initXlogEnv()
 
-        MarsService.setProfileFactory {
+        CoreService.setProfileFactory {
             object :DefaultMarsServiceProfile() {
                 override fun longLinkHost(): String {
                     return "192.168.63.45"

@@ -17,9 +17,9 @@ import com.tencent.mars.xlog.Log;
  * <p>
  * Created by zhangli on 2018/12/11 16:14.<br/>
  */
-public class MarsService extends Service {
+public class CoreService extends Service {
 
-    private static final String TAG = "MarsService";
+    private static final String TAG = "CoreService";
 
     private MarsServiceStub stub;
     private static MarsServiceProfileFactory gFactory = new MarsServiceProfileFactory() {

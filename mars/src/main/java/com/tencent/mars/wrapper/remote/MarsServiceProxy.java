@@ -6,13 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.*;
-import com.tencent.mars.wrapper.service.MarsService;
+import com.tencent.mars.wrapper.service.CoreService;
 import com.tencent.mars.xlog.Log;
 import com.zl.mars.remote.MarsPushMessageFilter;
 import com.zl.mars.remote.MarsTaskWrapper;
 import com.zl.mars.remote.TaskHandler;
 
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -79,7 +78,7 @@ public class MarsServiceProxy implements ServiceConnection {
     private boolean startService() {
         if (taskHandler == null) {
             Log.d(TAG, "try to bind remote mars service");
-            Intent i = new Intent(context, MarsService.class);
+            Intent i = new Intent(context, CoreService.class);
             context.startService(i);
             if (!context.bindService(i, inst, Service.BIND_AUTO_CREATE)) {
                 Log.e(TAG, "remote mars service bind failed");
