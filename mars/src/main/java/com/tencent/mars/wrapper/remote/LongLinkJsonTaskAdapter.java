@@ -12,15 +12,14 @@ import com.zl.mars.remote.MarsTaskWrapper;
  * <p></p>
  * <p>
  * Created by zhangli on 2018/12/21 10:14.<br/>
- * Copyright (c) 2015年 Beijing Yunshan Information Technology Co., Ltd. All rights reserved.<br/>
  */
-public abstract class LongLinkMarsTaskAdapter extends MarsTaskWrapper.Stub {
+public abstract class LongLinkJsonTaskAdapter extends MarsTaskWrapper.Stub {
 
     private static final String TAG = "LongLinkMarsTaskAdapter";
 
     private Gson gson;
 
-    public LongLinkMarsTaskAdapter() {
+    public LongLinkJsonTaskAdapter() {
         gson = new Gson();
 
     }

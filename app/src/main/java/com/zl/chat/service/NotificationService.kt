@@ -1,5 +1,6 @@
 package com.zl.chat.service
 
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
@@ -9,8 +10,6 @@ import androidx.core.app.NotificationCompat
 import com.tencent.mars.wrapper.remote.MarsServiceProxy
 import com.tencent.mars.wrapper.remote.PushMessageHandler
 import com.zl.chat.R
-import android.app.NotificationChannel
-
 
 
 /**
@@ -32,7 +31,7 @@ class NotificationService : Service() {
         mBuilder.setContentTitle("fixme")
             .setContentText(it.messageString)
             .setTicker("新消息")
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.mipmap.ic_launch)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setWhen(System.currentTimeMillis())
 

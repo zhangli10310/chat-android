@@ -1,26 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/bg"
-        android:fitsSystemWindows="true">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:fitsSystemWindows="true">
 
     <FrameLayout
-            android:id="@+id/frameLayout"
-            android:layout_width="0dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="@+id/bottomLayoutTopGuideline"
-            android:layout_height="0dp"/>
+        android:id="@+id/frameLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/bottomLayoutTopGuideline"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/bottomLayoutTopGuideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_end="@dimen/bottom_layout_height"/>
+        android:id="@+id/bottomLayoutTopGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="@dimen/bottom_layout_height" />
+
+    <!--  #04723 -->
+    <ImageView
+        android:id="@+id/msgIconImg"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:contentDescription="@string/app_name"
+        android:padding="8dp"
+        android:src="@mipmap/ic_msg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/contactIconImg"
+        app:layout_constraintTop_toTopOf="@+id/bottomLayoutTopGuideline" />
+
+    <TextView
+        android:id="@+id/msgUnreadCountText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_msg_red"
+        android:paddingStart="5dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="2dp"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintRight_toRightOf="@+id/msgIconImg"
+        app:layout_constraintTop_toTopOf="@+id/msgIconImg"
+        tools:text="1" />
+
+    <ImageView
+        android:id="@+id/contactIconImg"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:contentDescription="@string/app_name"
+        android:padding="8dp"
+        android:src="@mipmap/ic_contact"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/msgIconImg"
+        app:layout_constraintRight_toLeftOf="@+id/findIconImg"
+        app:layout_constraintTop_toTopOf="@+id/bottomLayoutTopGuideline" />
+
+    <ImageView
+        android:id="@+id/findIconImg"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:contentDescription="@string/app_name"
+        android:padding="8dp"
+        android:src="@mipmap/ic_find"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/contactIconImg"
+        app:layout_constraintRight_toLeftOf="@+id/mineIconImg"
+        app:layout_constraintTop_toTopOf="@+id/bottomLayoutTopGuideline" />
+
+    <ImageView
+        android:id="@+id/mineIconImg"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:contentDescription="@string/app_name"
+        android:padding="8dp"
+        android:src="@mipmap/ic_mine"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/findIconImg"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/bottomLayoutTopGuideline" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
