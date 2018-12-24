@@ -11,5 +11,6 @@ open class BaseMessage {
     val from = "fixme"
     var to: String? = null
 
-    var timeStamp = System.currentTimeMillis()
+    var clientTime = System.currentTimeMillis() / 1000
+    var serverTime: Long? = null
 }

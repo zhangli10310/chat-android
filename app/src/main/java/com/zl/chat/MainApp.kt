@@ -29,10 +29,11 @@ class MainApp : BaseApplication() {
         CoreService.setProfileFactory {
             object :DefaultMarsServiceProfile() {
                 override fun longLinkHost(): String {
-                    return "192.168.2.135"
+                    return BuildConfig.HOST_IP
                 }
             }
         }
+
         MarsServiceProxy.init(this)
 
         registerActivityLifecycleCallbacks(BackgroundActivityLifecycleCallbacks({

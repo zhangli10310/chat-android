@@ -21,6 +21,15 @@ android {
 
     productFlavors {
         dev {
+            buildConfigField "String", "HOST_IP", '"47.91.156.168"'
+            buildConfigField "String", "API_URL", '""'
+
+//            resValue "string", "app_name", "XiuChat"
+            buildConfigField "String", "APP_DIR", '"XiuChat"'
+        }
+
+        product {
+            buildConfigField "String", "HOST_IP", '"47.91.156.168"'
             buildConfigField "String", "API_URL", '""'
 
 //            resValue "string", "app_name", "XiuChat"
