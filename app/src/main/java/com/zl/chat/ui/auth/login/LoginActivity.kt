@@ -1,12 +1,16 @@
 package com.zl.chat.ui.auth.login
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.zl.chat.R
 import com.zl.chat.ui.auth.AuthRepository
+import com.zl.chat.ui.main.MainActivity
 import com.zl.core.BaseApplication
 import com.zl.core.base.ViewModelActivity
+import com.zl.core.utils.SPUtils
+import com.zl.core.utils.SPUtils.saveDefaultSharedPreferences
 
 /**
  *
@@ -33,6 +37,11 @@ class LoginActivity : ViewModelActivity<LoginViewModel>() {
         viewModel.userData.observe(this, Observer { user ->
             user?.let {
                 BaseApplication.instance.user = it
+                saveDefaultSharedPreferences {
+//                    putString("kl", "io")
+                }
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
             }
         })
     }
