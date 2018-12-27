@@ -21,9 +21,14 @@ class MainApp : BaseApplication() {
 
     private val TAG = MainApp::class.java.simpleName
 
+    companion object {
+        lateinit var instance: MainApp
+    }
+
     override fun onCreate() {
         super.onCreate()
 
+        instance = this
         initXlogEnv()
 
         CoreService.setProfileFactory {

@@ -12,8 +12,8 @@ import androidx.room.*
 @Dao
 interface UserDao {
 
-    @Query("SELECT * FROM user where uid = :uid")
-    fun queryUserById(uid: String): User
+    @Query("SELECT * FROM user where id = :id")
+    fun queryUserById(id: String): User
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(vararg users: User)

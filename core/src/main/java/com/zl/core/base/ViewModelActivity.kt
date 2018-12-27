@@ -16,8 +16,6 @@ abstract class ViewModelActivity<T : BaseViewModel> : ModeActivity() {
     @CallSuper
     override fun observe() {
         initViewModel()
-
-
     }
 
     abstract fun initViewModel()

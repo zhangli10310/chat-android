@@ -25,6 +25,8 @@
         <activity android:name=".ui.main.MainActivity"
             android:screenOrientation="portrait"/>
 
+        <activity android:name=".ui.auth.login.LoginActivity"/>
+
         <service android:name=".service.NotificationService"/>
 
     </application>

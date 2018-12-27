@@ -13,7 +13,7 @@ import androidx.room.PrimaryKey
 class User {
 
     @PrimaryKey
-    var uid: String = "unknown"
+    var id: String = "unknown"
 
     var nickName: String? = null
 
