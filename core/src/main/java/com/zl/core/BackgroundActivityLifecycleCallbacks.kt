@@ -9,7 +9,7 @@ import android.os.Looper
 class BackgroundActivityLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
     private val mHandler = Handler(Looper.getMainLooper())
     private var check: Runnable? = null
-    var isInForeground = true
+    var isInForeground = false
         private set
     private var mPaused = true
 

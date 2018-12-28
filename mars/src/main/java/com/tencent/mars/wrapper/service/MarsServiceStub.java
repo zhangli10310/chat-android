@@ -2,10 +2,13 @@ package com.tencent.mars.wrapper.service;
 
 import android.content.Context;
 import android.os.RemoteException;
+import androidx.annotation.NonNull;
 import com.tencent.mars.BaseEvent;
 import com.tencent.mars.app.AppLogic;
 import com.tencent.mars.sdt.SdtLogic;
 import com.tencent.mars.stn.StnLogic;
+import com.tencent.mars.wrapper.Constant;
+import com.tencent.mars.wrapper.remote.AbstractLongLinkTaskAdapter;
 import com.tencent.mars.xlog.Log;
 import com.zl.mars.remote.MarsPushMessageFilter;
 import com.zl.mars.remote.MarsTaskWrapper;
@@ -13,7 +16,6 @@ import com.zl.mars.remote.TaskHandler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,6 +31,11 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
     private static final String TAG = "MarsServiceStub";
 
     private Context context;
+    private AppLogic.AccountInfo accountInfo;
+    private AppLogic.DeviceInfo deviceInfo = new AppLogic.DeviceInfo(android.os.Build.MANUFACTURER + "-" + android.os.Build.MODEL, "android-" + android.os.Build.VERSION.SDK_INT);
+
+    private String accountId;
+    private String channelId; //服务端长连接标识
 
     private static Map<Integer, MarsTaskWrapper> TASK_ID_TO_WRAPPER = new ConcurrentHashMap<>();
 
@@ -70,6 +77,7 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
 
     @Override
     public void setForeground(boolean foreground) throws RemoteException {
+        Log.d(TAG, "setForeground: " + foreground);
         BaseEvent.onForeground(foreground);
     }
 
@@ -104,8 +112,27 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
     }
 
     @Override
+    public void setAccountId(String id) {
+        Log.d(TAG, "setAccountId: " + id);
+        accountId = id;
+        if (accountId == null) {
+            accountInfo = null;
+            channelId = null;
+        } else {
+            if (accountInfo != null) {
+                accountInfo.uin = accountId.hashCode();
+                accountInfo.userName = accountId;
+            } else {
+                accountInfo = new AppLogic.AccountInfo(accountId.hashCode(), accountId);
+            }
+            linkAccountAndChannel();
+        }
+    }
+
+    @Override
     public AppLogic.AccountInfo getAccountInfo() {
-        return new AppLogic.AccountInfo();
+        Log.i(TAG, "getAccountInfo: ");
+        return accountInfo;
     }
 
     @Override
@@ -115,7 +142,8 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
 
     @Override
     public AppLogic.DeviceInfo getDeviceType() {
-        return new AppLogic.DeviceInfo(android.os.Build.MANUFACTURER + "-" + android.os.Build.MODEL, "android-" + android.os.Build.VERSION.SDK_INT);
+        Log.d(TAG, "getDeviceType: ");
+        return deviceInfo;
     }
 
     @Override
@@ -126,7 +154,57 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
     @Override
     public boolean makesureAuthed() {
         Log.d(TAG, "makesureAuthed: ");
-        return true;//权限验证直接通过
+        if (channelId == null) {
+            linkAccountAndChannel();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private boolean linking = false;
+    private void linkAccountAndChannel() { //将用户和channel关联
+        if (linking || accountId == null) {
+            return;
+        }
+        Log.d(TAG, "linkAccountAndChannel: ");
+        linking = true;
+        try {
+            send(new AbstractLongLinkTaskAdapter() {
+
+                @Override
+                public int getCmdId() throws RemoteException {
+                    return Constant.CID_LINK_ACCOUNT_CHANNEL;
+                }
+
+                @Override
+                public byte[] req2buf() throws RemoteException {
+                    Log.d(TAG, "link accountId: " + accountId);
+                    return accountId.getBytes();
+                }
+
+                @Override
+                public int buf2resp(byte[] buf) throws RemoteException {
+                    channelId = new String(buf);
+                    Log.d(TAG, "channelId: " + channelId);
+                    return 0;
+                }
+
+                @Override
+                public void onTaskEnd(int errType, int errCode) throws RemoteException {
+                    super.onTaskEnd(errType, errCode);
+                    linking = false;
+                }
+
+                @Override
+                public boolean needAuthed() throws RemoteException {
+                    return false;
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            linking = false;
+        }
     }
 
     @Override
@@ -197,7 +275,6 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
 
         } catch (RemoteException e) {
             e.printStackTrace();
-
         }
 
         return 0;
@@ -211,6 +288,13 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
     @Override
     public void reportConnectInfo(int status, int longlinkstatus) {
         Log.i(TAG, "reportConnectInfo: " + status + "," + longlinkstatus);
+
+        if (status != StnLogic.CONNECTTING && status != StnLogic.CONNECTED) { //未连接上
+            channelId = null;
+        }
+        if (status == StnLogic.CONNECTED && channelId == null) { //连接上未关联
+            linkAccountAndChannel();
+        }
     }
 
     @Override
@@ -247,7 +331,7 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
     @Override
     public boolean isLogoned() {
         Log.d(TAG, "isLogoned: ");
-        return false;
+        return accountId != null;
     }
 
     @Override
@@ -255,7 +339,7 @@ public class MarsServiceStub extends TaskHandler.Stub implements StnLogic.ICallB
         Log.d(TAG, "reportTaskProfile: " + taskString);
     }
 
-//    @Override
+    //    @Override
     public void cancel(int taskID) throws RemoteException {
         Log.d(TAG, "cancel wrapper with taskID=%d using stn stop", taskID);
         StnLogic.stopTask(taskID);

@@ -13,7 +13,7 @@ import androidx.room.*
 interface UserDao {
 
     @Query("SELECT * FROM user where id = :id")
-    fun queryUserById(id: String): User
+    fun queryUserById(id: String): User?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(vararg users: User)

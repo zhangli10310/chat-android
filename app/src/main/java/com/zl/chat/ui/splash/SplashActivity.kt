@@ -9,10 +9,16 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.tencent.mars.wrapper.remote.MarsServiceProxy
 import com.zl.chat.R
 import com.zl.chat.service.NotificationService
+import com.zl.chat.ui.auth.login.LoginActivity
 import com.zl.chat.ui.main.MainActivity
+import com.zl.core.BaseApplication
 import com.zl.core.base.ViewModelActivity
+import com.zl.core.db.AppDatabase
+import com.zl.core.utils.SPUtils.getPrivateSharedPreferences
+import kotlin.concurrent.thread
 
 /**
  *
@@ -67,10 +73,45 @@ class SplashActivity : ViewModelActivity<SplashViewModel>() {
     private fun checkPermission() {
         requestPermission(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             if (it) {
-                viewModel.countDown(2000)
+                checkAccount()
             } else {
                 finish()
             }
         }
+    }
+
+    private fun checkAccount() {
+
+        if (BaseApplication.instance.user == null) {
+            thread {
+                val accountId = getPrivateSharedPreferences().getString(BaseApplication.SP_ACCOUNT_ID, null)
+                if (accountId != null) {
+                    val user = AppDatabase.getInstance().userDao().queryUserById(accountId)
+                    runOnUiThread {
+                        if (user == null) {
+                            goToLogin()
+                        } else {
+                            BaseApplication.instance.user = user
+                            goToMain()
+                        }
+                    }
+                } else {
+                    goToLogin()
+                }
+            }
+        } else {
+            goToMain()
+        }
+    }
+
+    private fun goToMain() {
+        MarsServiceProxy.inst.setAccountId(BaseApplication.instance.user?.id)
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
+    }
+
+    private fun goToLogin() {
+        startActivity(Intent(this, LoginActivity::class.java))
+        finish()
     }
 }

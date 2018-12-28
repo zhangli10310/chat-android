@@ -12,17 +12,25 @@ import com.zl.core.BaseApplication
  */
 object SPUtils {
 
-    const val SP_NAME = "chat"
+    private const val SP_NAME = "chat"
 
-    fun save(put: SharedPreferences.Editor.() -> Unit) {
-        val edit = BaseApplication.instance.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE).edit()
+    fun savePrivateSharedPreferences(name: String = SP_NAME, put: SharedPreferences.Editor.() -> Unit) {
+        val edit = BaseApplication.instance.getSharedPreferences(name, Context.MODE_PRIVATE).edit()
         put(edit)
         edit.apply()
     }
 
-    fun Context.saveDefaultSharedPreferences(put: SharedPreferences.Editor.() -> Unit) {
-        val editor = getSharedPreferences(SP_NAME, Context.MODE_PRIVATE).edit()
+    fun getPrivateSharedPreferences(name: String = SP_NAME): SharedPreferences {
+        return BaseApplication.instance.getSharedPreferences(name, Context.MODE_PRIVATE)
+    }
+
+    fun Context.savePrivateSharedPreferences(name: String = SP_NAME, put: SharedPreferences.Editor.() -> Unit) {
+        val editor = getSharedPreferences(name, Context.MODE_PRIVATE).edit()
         editor.put()
         editor.apply()
+    }
+
+    fun Context.getPrivateSharedPreferences(name: String = SP_NAME): SharedPreferences {
+        return getSharedPreferences(name, Context.MODE_PRIVATE)
     }
 }

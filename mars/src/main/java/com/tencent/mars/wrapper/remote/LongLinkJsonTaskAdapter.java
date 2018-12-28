@@ -6,14 +6,13 @@ import androidx.annotation.Nullable;
 import com.google.gson.Gson;
 import com.tencent.mars.stn.StnLogic;
 import com.tencent.mars.xlog.Log;
-import com.zl.mars.remote.MarsTaskWrapper;
 
 /**
  * <p></p>
  * <p>
- * Created by zhangli on 2018/12/21 10:14.<br/>
+ * Created by zhangli on 2018/12/28 18:18.<br/>
  */
-public abstract class LongLinkJsonTaskAdapter extends MarsTaskWrapper.Stub {
+public abstract class LongLinkJsonTaskAdapter extends AbstractLongLinkTaskAdapter {
 
     private static final String TAG = "LongLinkMarsTaskAdapter";
 
@@ -22,31 +21,6 @@ public abstract class LongLinkJsonTaskAdapter extends MarsTaskWrapper.Stub {
     public LongLinkJsonTaskAdapter() {
         gson = new Gson();
 
-    }
-
-    @Override
-    public int getChannelSelect() throws RemoteException {
-        return StnLogic.Task.ELong;
-    }
-
-    @Override
-    public String getCgiPath() throws RemoteException {
-        return null;
-    }
-
-    @Override
-    public String getHost() throws RemoteException {
-        return null;
-    }
-
-    @Override
-    public boolean sendOnly() throws RemoteException {
-        return false;
-    }
-
-    @Override
-    public boolean needAuthed() throws RemoteException {
-        return true;
     }
 
     @Override
@@ -72,11 +46,6 @@ public abstract class LongLinkJsonTaskAdapter extends MarsTaskWrapper.Stub {
 
         }
         return StnLogic.RESP_FAIL_HANDLE_TASK_END;
-    }
-
-    @Override
-    public void onTaskEnd(int errType, int errCode) throws RemoteException {
-
     }
 
     @Nullable

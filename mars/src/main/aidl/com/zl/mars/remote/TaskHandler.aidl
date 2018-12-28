@@ -8,6 +8,8 @@ import com.zl.mars.remote.MarsPushMessageFilter;
 
 interface TaskHandler {
 
+    void setAccountId(String id);
+
     int send(MarsTaskWrapper taskWrapper);
 
     void setForeground(boolean foreground);

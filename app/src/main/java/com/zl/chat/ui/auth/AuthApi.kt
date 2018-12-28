@@ -3,6 +3,7 @@ package com.zl.chat.ui.auth
 import com.zl.core.base.BaseEntity
 import com.zl.core.db.user.User
 import io.reactivex.Observable
+import retrofit2.http.Body
 import retrofit2.http.POST
 
 /**
@@ -14,5 +15,5 @@ import retrofit2.http.POST
 interface AuthApi {
 
     @POST("auth/login")
-    fun login(map: Map<String, String>): Observable<BaseEntity<User?>>
+    fun login(@Body map: Map<String, String>): Observable<BaseEntity<User?>>
 }

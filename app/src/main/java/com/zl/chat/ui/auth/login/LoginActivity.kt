@@ -4,13 +4,15 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.tencent.mars.wrapper.remote.MarsServiceProxy
 import com.zl.chat.R
 import com.zl.chat.ui.auth.AuthRepository
 import com.zl.chat.ui.main.MainActivity
 import com.zl.core.BaseApplication
 import com.zl.core.base.ViewModelActivity
-import com.zl.core.utils.SPUtils
-import com.zl.core.utils.SPUtils.saveDefaultSharedPreferences
+import com.zl.core.extend.toTextString
+import com.zl.core.utils.SPUtils.savePrivateSharedPreferences
+import kotlinx.android.synthetic.main.activity_login.*
 
 /**
  *
@@ -31,15 +33,24 @@ class LoginActivity : ViewModelActivity<LoginViewModel>() {
 
     }
 
+    override fun setListener() {
+        super.setListener()
+
+        loginButton.setOnClickListener {
+            viewModel.login(accountEdit.toTextString(), pwdEdit.toTextString())
+        }
+    }
+
     override fun observe() {
         super.observe()
 
         viewModel.userData.observe(this, Observer { user ->
             user?.let {
                 BaseApplication.instance.user = it
-                saveDefaultSharedPreferences {
-//                    putString("kl", "io")
+                savePrivateSharedPreferences {
+                    putString(BaseApplication.SP_ACCOUNT_ID, it.id)
                 }
+                MarsServiceProxy.inst.setAccountId(BaseApplication.instance.user?.id)
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
             }

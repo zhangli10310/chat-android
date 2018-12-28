@@ -84,6 +84,10 @@ public class MarsServiceProxy implements ServiceConnection {
                 Log.e(TAG, "remote mars service bind failed");
                 return false;
             }
+            if (taskHandler == null) {
+                Log.e(TAG, "startService: fail");
+                return false;
+            }
         }
         return true;
     }
@@ -95,6 +99,7 @@ public class MarsServiceProxy implements ServiceConnection {
             taskHandler = TaskHandler.Stub.asInterface(service);
 
             taskHandler.registerMarsPushMessageFilter(filter);
+//            taskHandler.setForeground(true);
         } catch (Exception e) {
             e.printStackTrace();
             taskHandler = null;
@@ -127,6 +132,16 @@ public class MarsServiceProxy implements ServiceConnection {
         if (startService()) {
             try {
                 taskHandler.setForeground(foreground);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setAccountId(final String id) {
+        if (startService()) {
+            try {
+                taskHandler.setAccountId(id);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
