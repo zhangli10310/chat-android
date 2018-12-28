@@ -1,5 +1,6 @@
 package com.zl.core.extend
 
+import com.zl.core.NetException
 import com.zl.core.base.BaseEntity
 import com.zl.core.base.BaseViewModel
 import io.reactivex.Observable
@@ -25,7 +26,7 @@ public fun <T> Observable<BaseEntity<T?>>.apiSubscribe(viewModel: BaseViewModel,
             if (it.code == 0) {
                 onNext(it.data)
             } else {
-//                    viewModel.errorMsg.postValue(NetError(it.status_code, "fixme: RxExtend.kt line-29"))
+                    viewModel.errorMsg.postValue(NetException(it.code, "fixme: RxExtend.kt line-29"))
                 if (onError != null) {
                     onError(RuntimeException(it.message.toString()))
                 }
@@ -33,7 +34,7 @@ public fun <T> Observable<BaseEntity<T?>>.apiSubscribe(viewModel: BaseViewModel,
         }, {
             if (onError == null) {
                 it.printStackTrace()
-//                    viewModel.errorMsg.postValue(NetError(-1, it.message))
+                    viewModel.errorMsg.postValue(NetException(-1, it.message.toString()))
             } else {
                 onError(it)
             }

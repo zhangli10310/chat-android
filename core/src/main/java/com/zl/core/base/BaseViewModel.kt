@@ -1,6 +1,8 @@
 package com.zl.core.base
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.zl.core.NetException
 
 /**
  *
@@ -10,5 +12,6 @@ import androidx.lifecycle.ViewModel
  */
 open class BaseViewModel : ViewModel() {
 
+    var errorMsg = MutableLiveData<NetException>()
 
 }

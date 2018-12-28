@@ -28,6 +28,7 @@ public class MarsServiceProxy implements ServiceConnection {
     private Handler mHandler;
     private TaskHandler taskHandler;
 
+    private String accountId;
     private ConcurrentLinkedQueue<PushMessageHandler> pushMessageHandlerQueue = new ConcurrentLinkedQueue<>();
     private MarsPushMessageFilter filter = new MarsPushMessageFilter.Stub() {
 
@@ -97,9 +98,9 @@ public class MarsServiceProxy implements ServiceConnection {
         Log.d(TAG, "remote mars service connected");
         try {
             taskHandler = TaskHandler.Stub.asInterface(service);
-
+            taskHandler.setAccountId(accountId);
             taskHandler.registerMarsPushMessageFilter(filter);
-//            taskHandler.setForeground(true);
+            taskHandler.setForeground(true);
         } catch (Exception e) {
             e.printStackTrace();
             taskHandler = null;
@@ -129,22 +130,19 @@ public class MarsServiceProxy implements ServiceConnection {
     }
 
     public void setForeground(boolean foreground) {
-        if (startService()) {
-            try {
-                taskHandler.setForeground(foreground);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+        try {
+            taskHandler.setForeground(foreground);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public void setAccountId(final String id) {
-        if (startService()) {
-            try {
-                taskHandler.setAccountId(id);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
+    public void setAccountId(String id) {
+        accountId = id;
+        try {
+            taskHandler.setAccountId(id);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

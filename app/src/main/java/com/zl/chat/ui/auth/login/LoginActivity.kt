@@ -55,5 +55,9 @@ class LoginActivity : ViewModelActivity<LoginViewModel>() {
                 finish()
             }
         })
+
+        viewModel.errorMsg.observe(this, Observer {
+            showToastSafe(it.message)
+        })
     }
 }

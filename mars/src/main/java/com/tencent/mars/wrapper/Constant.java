@@ -8,4 +8,5 @@ package com.tencent.mars.wrapper;
 public class Constant {
 
     public static int CID_LINK_ACCOUNT_CHANNEL = 0x10; //绑定用户名和channel
+    public static final int CMDID_SINGLE_TEXT_MSG = 0x20; //单聊文字消息
 }
