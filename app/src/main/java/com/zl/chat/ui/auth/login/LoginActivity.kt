@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.tencent.mars.wrapper.remote.MarsServiceProxy
 import com.zl.chat.R
 import com.zl.chat.ui.auth.AuthRepository
+import com.zl.chat.ui.auth.register.RegisterActivity
 import com.zl.chat.ui.main.MainActivity
 import com.zl.core.BaseApplication
 import com.zl.core.base.ViewModelActivity
@@ -38,6 +39,10 @@ class LoginActivity : ViewModelActivity<LoginViewModel>() {
 
         loginButton.setOnClickListener {
             viewModel.login(accountEdit.toTextString(), pwdEdit.toTextString())
+        }
+
+        registerText.setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
     }
 

@@ -5,26 +5,22 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
-import androidx.annotation.RequiresPermission
 import android.util.Log
-import com.zl.core.BaseApplication
 import okhttp3.ResponseBody
 import java.io.*
 import java.math.BigDecimal
 import java.util.HashMap
+import android.os.Build
+import androidx.annotation.RequiresPermission
+import androidx.core.content.FileProvider
+import com.zl.core.R
 
-/**
- *
- *<p></p>
- *
- * Created by zhangli on 2018/1/31 11:44.<br/>
- * Copyright (c) 2015年 Beijing Yunshan Information Technology Co., Ltd. All rights reserved.<br/>
- */
+
 object FileUtils {
 
     private val TAG = FileUtils::class.java.simpleName
 
-    public val FOLDER = "douyin"
+    const val FOLDER = "chat"
 
     @SuppressLint("MissingPermission")
     @RequiresPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -116,20 +112,21 @@ object FileUtils {
 
     @SuppressLint("MissingPermission")
     @RequiresPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    fun installApk(context: Context, dir: String, fileName: String) {
+    fun openFile(context: Context, dir: String, fileName: String) {
         val file = getFile(dir, fileName)
         if (file != null) {
             val intent = Intent(Intent.ACTION_VIEW)
-            //如果没有设置SDCard写权限，或者没有sdcard,apk文件保存在内存中，需要授予权限才能安装
-            try {
-                val command = arrayOf("chmod", "777", file.toString())
-                val builder = ProcessBuilder(*command)
-                builder.start()
-            } catch (ignored: IOException) {
-            }
-
-            intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive")
-
+//            //如果没有设置SDCard写权限，或者没有sdcard,apk文件保存在内存中，需要授予权限才能安装
+//            try {
+//                val command = arrayOf("chmod", "777", file.toString())
+//                val builder = ProcessBuilder(*command)
+//                builder.start()
+//            } catch (ignored: IOException) {
+//            }
+            val type = getMIMEType(fileName)
+            val uri = getUriForFile(context, file)
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            intent.setDataAndType(uri, type)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
         }
@@ -183,10 +180,10 @@ object FileUtils {
             if (fileList != null) {
                 for (aFileList in fileList) {
                     // 如果下面还有文件
-                    if (aFileList.isDirectory) {
-                        size = size + getFolderSize(aFileList)
+                    size += if (aFileList.isDirectory) {
+                        getFolderSize(aFileList)
                     } else {
-                        size = size + aFileList.length()
+                        aFileList.length()
                     }
                 }
             }
@@ -245,18 +242,13 @@ object FileUtils {
         return getFormatSize(cacheSize.toDouble())
     }
 
-    fun getCacheDir(uniqueName: String): File {
-        val cachePath: String
-
-        if (Environment.MEDIA_MOUNTED == Environment.getExternalStorageState() || !Environment.isExternalStorageRemovable()) {
-            //如果SD卡存在通过getExternalCacheDir()获取路径，
-            cachePath = BaseApplication.instance.externalCacheDir.path
+    fun getUriForFile(context: Context, file: File):Uri {
+        return if (Build.VERSION.SDK_INT >= 24) {
+            //provider authorities
+            FileProvider.getUriForFile(context, context.getString(R.string.pro_auth), file)
         } else {
-            //如果SD卡不存在通过getCacheDir()获取路径，
-            cachePath = BaseApplication.instance.cacheDir.path
+            Uri.fromFile(file)
         }
-        //放在路径 /.../data/<application package>/cache/uniqueName
-        return File(cachePath + File.separator + uniqueName)
     }
 
     private val MIME_MAP = object : HashMap<String, String>() {

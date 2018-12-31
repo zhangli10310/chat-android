@@ -26,8 +26,10 @@
             android:screenOrientation="portrait"/>
 
         <activity android:name=".ui.auth.login.LoginActivity"/>
+        <activity android:name=".ui.auth.register.RegisterActivity"/>
 
         <service android:name=".service.NotificationService"/>
+        <service android:name=".update.BackgroundDownloadService"/>
 
     </application>
 

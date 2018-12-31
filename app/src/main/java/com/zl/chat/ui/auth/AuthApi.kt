@@ -16,4 +16,7 @@ interface AuthApi {
 
     @POST("auth/login")
     fun login(@Body map: Map<String, String>): Observable<BaseEntity<User?>>
+
+    @POST("auth/register")
+    fun register(@Body map: Map<String, String?>): Observable<BaseEntity<String?>>
 }

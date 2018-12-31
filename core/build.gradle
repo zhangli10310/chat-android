@@ -26,6 +26,11 @@ android {
 
 //            resValue "string", "app_name", "XiuChat"
             buildConfigField "String", "APP_DIR", '"XiuChat"'
+
+            resValue "string", "pro_auth", "com.zl.chat.d.fileprovider"
+//            manifestPlaceholders = [
+//                    pro_auth:"com.zl.chat.d.fileprovider"
+//            ]
         }
 
         product {
@@ -34,6 +39,11 @@ android {
 
 //            resValue "string", "app_name", "XiuChat"
             buildConfigField "String", "APP_DIR", '"XiuChat"'
+
+            resValue "string", "pro_auth", "com.zl.chat.fileprovider"
+//            manifestPlaceholders = [
+//                    pro_auth:"com.zl.chat.fileprovider"
+//            ]
         }
     }
 

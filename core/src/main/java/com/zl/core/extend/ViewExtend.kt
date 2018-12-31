@@ -13,6 +13,15 @@ import androidx.annotation.LayoutRes
 
 public fun TextView.toTextString(): String = text.toString().trim()
 
+public fun TextView.toTextStringOrNull(): String? {
+    val s = toTextString()
+    return if (s.isBlank()) {
+        null
+    } else {
+        s
+    }
+}
+
 public fun TextView.isEmpty(): Boolean = TextUtils.isEmpty(toTextString())
 
 public fun TextView.toIntOrNull(): Int? = toTextString().toIntOrNull()

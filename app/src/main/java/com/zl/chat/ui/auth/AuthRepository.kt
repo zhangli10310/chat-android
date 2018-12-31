@@ -36,4 +36,11 @@ class AuthRepository {
             )
         )
     }
+
+    fun register(phoneNo: String?, pwd: String): Observable<BaseEntity<String?>>{
+        return mApi.register(mapOf(
+            Pair("phoneNo", phoneNo),
+            Pair("password", pwd)
+        ))
+    }
 }

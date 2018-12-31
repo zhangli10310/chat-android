@@ -21,7 +21,7 @@ import com.zl.chat.R
 class NotificationService : Service() {
 
     private val channelId = "NotificationService"
-    private val channelName = "NotificationService"
+    private val channelName = "推送通知"
 
     private lateinit var notificationManager: NotificationManager
     private lateinit var mBuilder: NotificationCompat.Builder
@@ -45,7 +45,7 @@ class NotificationService : Service() {
         mBuilder = NotificationCompat.Builder(this, channelId)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW)
+            val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
             notificationManager.createNotificationChannel(channel)
         }
 

@@ -71,7 +71,8 @@ open class BaseActivity : AppCompatActivity() {
         if (!grant) {
             val dialog = AlertDialog.Builder(this)
                 .setMessage("请授予权限")
-                .setPositiveButton("确定") { _, _ ->
+                .setPositiveButton("确定", null)
+                .setOnDismissListener {
                     ActivityCompat.requestPermissions(this, permissions, PERMISSION_REQUEST_CODE)
                 }
                 .create()
