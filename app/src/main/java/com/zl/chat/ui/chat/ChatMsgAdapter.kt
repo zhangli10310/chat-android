@@ -2,9 +2,13 @@ package com.zl.chat.ui.chat
 
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.zl.chat.MainApp
+import com.zl.chat.R
 import com.zl.core.base.BaseRecyclerViewAdapter
+import com.zl.core.extend.inflate
+import kotlinx.android.synthetic.main.item_msg_myself.view.*
+import kotlinx.android.synthetic.main.item_msg_other.view.*
 
 /**
  *
@@ -12,13 +16,31 @@ import com.zl.core.base.BaseRecyclerViewAdapter
  *
  * Created by zhangli on 2019/1/6 18:36.<br/>
  */
-class ChatMsgAdapter(private var list: MutableList<String>): BaseRecyclerViewAdapter<String>(list) {
+class ChatMsgAdapter(private var list: MutableList<ChatMsgEntity>): BaseRecyclerViewAdapter<ChatMsgEntity>(list) {
 
     override fun getView(parent: ViewGroup, viewType: Int): View {
-        return TextView(parent.context)
+        return if (viewType == 0) {
+            parent.inflate(R.layout.item_msg_myself, parent)
+        } else {
+            parent.inflate(R.layout.item_msg_other, parent)
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        (holder.itemView as TextView).text = list[position]
+        val entity = list[position]
+
+        if (list[position].userId == MainApp.instance.user?.id) {//是自己
+            holder.itemView.myMessageText.text = entity.message
+        } else { //是他人
+            holder.itemView.otherMessageText.text = entity.message
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (list[position].userId == MainApp.instance.user?.id) {//是自己
+            0
+        } else { //是他人
+            1
+        }
     }
 }

@@ -8,11 +8,16 @@ import com.tencent.mars.wrapper.Constant
 import com.tencent.mars.wrapper.remote.LongLinkJsonTaskAdapter
 import com.tencent.mars.wrapper.remote.MarsServiceProxy
 import com.tencent.mars.wrapper.remote.PushMessageHandler
+import com.tencent.mars.wrapper.remote.msg.SingleTextMessageTask
 import com.tencent.mars.xlog.Log
+import com.zl.chat.MainApp
 import com.zl.chat.R
+import com.zl.chat.common.TextMessage
 import com.zl.core.BaseApplication
 import com.zl.core.base.BaseMessage
 import com.zl.core.base.ViewModelActivity
+import com.zl.core.extend.clear
+import com.zl.core.extend.toTextString
 import kotlinx.android.synthetic.main.activity_chat.*
 
 
@@ -26,7 +31,7 @@ class ChatActivity: ViewModelActivity<ChatViewModel>() {
 
     private val TAG = ChatActivity::class.java.simpleName
 
-    private val mList = mutableListOf<String>()
+    private val mList = mutableListOf<ChatMsgEntity>()
     private lateinit var mAdapter:ChatMsgAdapter
 
     override fun initViewModel() {
@@ -46,18 +51,24 @@ class ChatActivity: ViewModelActivity<ChatViewModel>() {
         super.setListener()
 
         sendButton.setOnClickListener {
-            MarsServiceProxy.inst.send(object :LongLinkJsonTaskAdapter(){
-                override fun getCmdId() = Constant.CID_SEND_SINGLE_TEXT_MSG
+            MarsServiceProxy.inst.send(object :SingleTextMessageTask(){
+
+                override fun onSendFail(id: String) {
+
+                }
 
                 override fun request(): Any {
-                    return BaseMessage().apply {
-                        from = BaseApplication.instance.user!!.id
+                    return TextMessage().apply {
+                        id = getId()
+                        from = MainApp.instance.user?.id!!
                         to = "all"
+                        msg = inputEdit.toTextString()
+                        inputEdit.clear()
                     }
                 }
 
-                override fun onResponse(json: String) {
-                    Log.i(TAG, "onResponse: " + json + Thread.currentThread())
+                override fun onSendSuccess(id: String) {
+
                 }
 
             })
@@ -66,9 +77,16 @@ class ChatActivity: ViewModelActivity<ChatViewModel>() {
 
     val handler = PushMessageHandler {
 
-        runOnUiThread {
-            mList.add(it.messageString)
-            mAdapter.notifyDataSetChanged()
+        if (it.cmdId == Constant.CID_RECEIVE_SINGLE_TEXT_MSG) {
+            val msg = it.toMessage(TextMessage::class.java)
+            runOnUiThread {
+                val entity = ChatMsgEntity().apply {
+                    userId = msg.from
+                    message = msg.msg
+                }
+                mList.add(entity)
+                mAdapter.notifyDataSetChanged()
+            }
         }
     }
     override fun onResume() {
