@@ -8,7 +8,7 @@ package com.zl.core.base
  */
 open class BaseMessage {
 
-    val from = "fixme"
+    var from = "fixme"
     var to: String? = null
 
     var clientTime = System.currentTimeMillis() / 1000

@@ -21,6 +21,8 @@ class MainApp : BaseApplication() {
 
     private val TAG = MainApp::class.java.simpleName
 
+    var foreground = false
+
     companion object {
         lateinit var instance: MainApp
     }
@@ -45,12 +47,14 @@ class MainApp : BaseApplication() {
             //onBackground
             Log.i(TAG, "app background")
 
+            foreground = false
             MarsServiceProxy.inst.setForeground(false)
 
             Log.appenderClose()
         }, {
             //onResume
             Log.i(TAG, "app resume")
+            foreground = true
             MarsServiceProxy.inst.setForeground(true)
         }))
 

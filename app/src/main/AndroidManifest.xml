@@ -27,6 +27,7 @@
 
         <activity android:name=".ui.auth.login.LoginActivity"/>
         <activity android:name=".ui.auth.register.RegisterActivity"/>
+        <activity android:name=".ui.chat.ChatActivity"/>
 
         <service android:name=".service.NotificationService"/>
         <service android:name=".update.BackgroundDownloadService"/>

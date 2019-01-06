@@ -1,9 +1,11 @@
 package com.zl.chat.ui.main.msg
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.zl.chat.R
+import com.zl.chat.ui.chat.ChatActivity
 import com.zl.core.base.ViewModelFragment
 import kotlinx.android.synthetic.main.fragment_msg.*
 
@@ -25,12 +27,22 @@ class MsgFragment : ViewModelFragment<MsgViewModel>() {
 
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
-        mAdapter = MsgAdapter(mList)
+        mAdapter = MsgAdapter(mList) {
+            startActivity(Intent(activity, ChatActivity::class.java))
+        }
         recyclerView.adapter = mAdapter
     }
 
     override fun afterView() {
         super.afterView()
 
+        loadData()
+    }
+
+    private fun loadData() {
+        mList.add(MsgEntity().apply {
+            nickName = "你好"
+        })
+        mAdapter.notifyDataSetChanged()
     }
 }

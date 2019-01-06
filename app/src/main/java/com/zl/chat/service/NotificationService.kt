@@ -9,6 +9,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.tencent.mars.wrapper.remote.MarsServiceProxy
 import com.tencent.mars.wrapper.remote.PushMessageHandler
+import com.zl.chat.MainApp
 import com.zl.chat.R
 
 
@@ -28,14 +29,16 @@ class NotificationService : Service() {
 
     private val handler: PushMessageHandler = PushMessageHandler {
 
-        mBuilder.setContentTitle("fixme")
-            .setContentText(it.messageString)
-            .setTicker("新消息")
-            .setSmallIcon(R.mipmap.ic_launch)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setWhen(System.currentTimeMillis())
+        if (!MainApp.instance.foreground) {
+            mBuilder.setContentTitle("fixme")
+                .setContentText(it.messageString)
+                .setTicker("新消息")
+                .setSmallIcon(R.mipmap.ic_launch)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setWhen(System.currentTimeMillis())
 
-        notificationManager.notify(100, mBuilder.build())
+            notificationManager.notify(100, mBuilder.build())
+        }
     }
 
     override fun onCreate() {
