@@ -5,10 +5,11 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.zl.core.view.ChatRecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@color/bg"
         app:layout_constraintBottom_toTopOf="@+id/inputEdit"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

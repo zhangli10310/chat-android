@@ -1,20 +1,15 @@
 package com.zl.chat.ui.chat
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tencent.mars.wrapper.Constant
-import com.tencent.mars.wrapper.remote.LongLinkJsonTaskAdapter
 import com.tencent.mars.wrapper.remote.MarsServiceProxy
 import com.tencent.mars.wrapper.remote.PushMessageHandler
 import com.tencent.mars.wrapper.remote.msg.SingleTextMessageTask
-import com.tencent.mars.xlog.Log
 import com.zl.chat.MainApp
 import com.zl.chat.R
 import com.zl.chat.common.TextMessage
-import com.zl.core.BaseApplication
-import com.zl.core.base.BaseMessage
 import com.zl.core.base.ViewModelActivity
 import com.zl.core.extend.clear
 import com.zl.core.extend.toTextString
@@ -27,12 +22,12 @@ import kotlinx.android.synthetic.main.activity_chat.*
  *
  * Created by zhangli on 2019/1/6 17:02.<br/>
  */
-class ChatActivity: ViewModelActivity<ChatViewModel>() {
+class ChatActivity : ViewModelActivity<ChatViewModel>() {
 
     private val TAG = ChatActivity::class.java.simpleName
 
     private val mList = mutableListOf<ChatMsgEntity>()
-    private lateinit var mAdapter:ChatMsgAdapter
+    private lateinit var mAdapter: ChatMsgAdapter
 
     override fun initViewModel() {
         viewModel = ViewModelProviders.of(this, ChatViewModel.Factory()).get(ChatViewModel::class.java)
@@ -51,7 +46,8 @@ class ChatActivity: ViewModelActivity<ChatViewModel>() {
         super.setListener()
 
         sendButton.setOnClickListener {
-            MarsServiceProxy.inst.send(object :SingleTextMessageTask(){
+            val msgText = inputEdit.toTextString()
+            MarsServiceProxy.inst.send(object : SingleTextMessageTask() {
 
                 override fun onSendFail(id: String) {
 
@@ -62,8 +58,7 @@ class ChatActivity: ViewModelActivity<ChatViewModel>() {
                         id = getId()
                         from = MainApp.instance.user?.id!!
                         to = "all"
-                        msg = inputEdit.toTextString()
-                        inputEdit.clear()
+                        msg = msgText
                     }
                 }
 
@@ -72,6 +67,7 @@ class ChatActivity: ViewModelActivity<ChatViewModel>() {
                 }
 
             })
+            inputEdit.clear()
         }
     }
 
@@ -86,9 +82,11 @@ class ChatActivity: ViewModelActivity<ChatViewModel>() {
                 }
                 mList.add(entity)
                 mAdapter.notifyDataSetChanged()
+                recyclerView.smoothScrollToPosition(mList.size - 1)
             }
         }
     }
+
     override fun onResume() {
         super.onResume()
 

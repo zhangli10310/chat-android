@@ -30,7 +30,7 @@ public abstract class LongLinkJsonTaskAdapter extends AbstractLongLinkTaskAdapte
             Log.d(TAG, "req2buf: " + json);
             return json.getBytes();
         } catch (Exception e) {
-
+            Log.e(TAG, "req2buf: " + e);
         }
         return new byte[0];
     }
@@ -43,7 +43,7 @@ public abstract class LongLinkJsonTaskAdapter extends AbstractLongLinkTaskAdapte
             onResponse(resp);
             return StnLogic.RESP_FAIL_HANDLE_NORMAL;
         } catch (Exception e) {
-
+            Log.e(TAG, "buf2resp: " + e);
         }
         return StnLogic.RESP_FAIL_HANDLE_TASK_END;
     }

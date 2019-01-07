@@ -27,7 +27,8 @@
 
         <activity android:name=".ui.auth.login.LoginActivity"/>
         <activity android:name=".ui.auth.register.RegisterActivity"/>
-        <activity android:name=".ui.chat.ChatActivity"/>
+        <activity android:name=".ui.chat.ChatActivity"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
 
         <service android:name=".service.NotificationService"/>
         <service android:name=".update.BackgroundDownloadService"/>
