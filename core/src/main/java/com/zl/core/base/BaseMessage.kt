@@ -8,7 +8,7 @@ package com.zl.core.base
  */
 open class BaseMessage {
 
-    var id: String? = null
+    var id: String? = null //消息ID
     var from = "fixme"
     var to: String? = null
 

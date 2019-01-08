@@ -2,6 +2,7 @@ package com.tencent.mars.wrapper.remote.msg;
 
 import android.os.RemoteException;
 import androidx.annotation.NonNull;
+import com.tencent.mars.stn.StnLogic;
 import com.tencent.mars.wrapper.Constant;
 import com.tencent.mars.wrapper.remote.LongLinkJsonTaskAdapter;
 
@@ -17,17 +18,6 @@ public abstract class SingleTextMessageTask extends LongLinkJsonTaskAdapter {
     @Override
     public void onResponse(@NonNull String json) {
 
-        if (Constant.SUCCESS.equals(json)){
-            onSendSuccess(getId());
-        } else {
-            onSendFail(getId());
-        }
-    }
-
-    @Override
-    public void onTaskEnd(int errType, int errCode) throws RemoteException {
-        super.onTaskEnd(errType, errCode);
-        onSendFail(getId());
     }
 
     @Override
@@ -42,9 +32,14 @@ public abstract class SingleTextMessageTask extends LongLinkJsonTaskAdapter {
         return id;
     }
 
-
-    public abstract void onSendSuccess(String id);
-    public abstract void onSendFail(String id);
+    @Override
+    public int buf2resp(byte[] buf) throws RemoteException {
+        if (buf == null) {
+            onResponse("");
+            return StnLogic.RESP_FAIL_HANDLE_NORMAL;
+        }
+        return super.buf2resp(buf);
+    }
 
 }
 

@@ -5,6 +5,16 @@
     android:layout_height="wrap_content"
     android:padding="10dp">
 
+    <ImageView
+        android:id="@+id/statusImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/app_name"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/myMessageText"
+        app:layout_constraintRight_toLeftOf="@+id/myMessageText"
+        app:layout_constraintTop_toTopOf="@+id/myMessageText" />
+
     <TextView
         android:id="@+id/myMessageText"
         android:layout_width="wrap_content"

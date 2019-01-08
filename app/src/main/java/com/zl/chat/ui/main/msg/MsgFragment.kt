@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.zl.chat.R
 import com.zl.chat.ui.chat.ChatActivity
+import com.zl.chat.ui.chat.Constant
 import com.zl.core.base.ViewModelFragment
 import kotlinx.android.synthetic.main.fragment_msg.*
 
@@ -28,7 +29,10 @@ class MsgFragment : ViewModelFragment<MsgViewModel>() {
         recyclerView.layoutManager = LinearLayoutManager(activity)
 
         mAdapter = MsgAdapter(mList) {
-            startActivity(Intent(activity, ChatActivity::class.java))
+            val position = it.adapterPosition
+            if (position >= 0) {
+                ChatActivity.startActivity(this, mList[position])
+            }
         }
         recyclerView.adapter = mAdapter
     }
@@ -41,7 +45,8 @@ class MsgFragment : ViewModelFragment<MsgViewModel>() {
 
     private fun loadData() {
         mList.add(MsgEntity().apply {
-            nickName = "你好"
+            nickName = "世界"
+            conversationId = "all"
         })
         mAdapter.notifyDataSetChanged()
     }

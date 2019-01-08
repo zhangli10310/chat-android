@@ -15,4 +15,6 @@ class ChatMsgEntity {
 
     var type: Int = 0
     var detail: String? = null
+
+    var status: Int = 0  //0 成功  1 失败  2发送中
 }

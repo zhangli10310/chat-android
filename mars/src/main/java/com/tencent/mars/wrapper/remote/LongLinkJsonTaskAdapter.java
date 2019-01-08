@@ -16,7 +16,9 @@ public abstract class LongLinkJsonTaskAdapter extends AbstractLongLinkTaskAdapte
 
     private static final String TAG = "LongLinkMarsTaskAdapter";
 
-    private Gson gson;
+    protected Gson gson;
+
+    private String jsonReq;
 
     public LongLinkJsonTaskAdapter() {
         gson = new Gson();
@@ -26,9 +28,11 @@ public abstract class LongLinkJsonTaskAdapter extends AbstractLongLinkTaskAdapte
     @Override
     public byte[] req2buf() throws RemoteException {
         try {
-            String json = gson.toJson(request());
-            Log.d(TAG, "req2buf: " + json);
-            return json.getBytes();
+            if (jsonReq == null) {
+                jsonReq = gson.toJson(request());
+            }
+            Log.d(TAG, "req2buf: " + jsonReq);
+            return jsonReq.getBytes();
         } catch (Exception e) {
             Log.e(TAG, "req2buf: " + e);
         }
@@ -46,16 +50,6 @@ public abstract class LongLinkJsonTaskAdapter extends AbstractLongLinkTaskAdapte
             Log.e(TAG, "buf2resp: " + e);
         }
         return StnLogic.RESP_FAIL_HANDLE_TASK_END;
-    }
-
-    @Nullable
-    protected  <S> S toResponse(String json, Class<S> sClass) {
-        try {
-            gson.fromJson(json, sClass);
-        } catch (Exception e) {
-
-        }
-        return null;
     }
 
     public abstract Object request();

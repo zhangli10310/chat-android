@@ -31,8 +31,20 @@ class ChatMsgAdapter(private var list: MutableList<ChatMsgEntity>): BaseRecycler
 
         if (list[position].userId == MainApp.instance.user?.id) {//是自己
             holder.itemView.myMessageText.text = entity.message
+//            holder.itemView.myNameText.text = entity.userId
+            if (entity.status == 2) {
+                holder.itemView.statusImg.visibility = View.VISIBLE
+                holder.itemView.statusImg.setImageResource(R.mipmap.ic_loading)
+            } else if (entity.status == 1) {
+                holder.itemView.statusImg.visibility = View.VISIBLE
+                holder.itemView.statusImg.setImageResource(R.mipmap.ic_warn)
+            } else {
+                holder.itemView.statusImg.visibility = View.GONE
+            }
+
         } else { //是他人
             holder.itemView.otherMessageText.text = entity.message
+            holder.itemView.uNameText.text = entity.userId
         }
     }
 

@@ -1,6 +1,7 @@
 package com.zl.chat.ui.main
 
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.ViewModelProviders
 import com.zl.chat.R
 import com.zl.chat.ui.main.contact.ContactFragment
@@ -108,7 +109,8 @@ class MainActivity : ViewModelActivity<MainViewModel>() {
         super.afterView()
         selectMsg()
 
-        msgUnreadCountText.text = "12"
+//        msgUnreadCountText.visibility = View.VISIBLE
+//        msgUnreadCountText.text = "12"
     }
 
     private fun showFragment(fragment: BaseFragment) {
