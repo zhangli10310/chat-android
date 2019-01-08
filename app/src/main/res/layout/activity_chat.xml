@@ -19,6 +19,16 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/app_name" />
 
+    <ImageView
+        android:id="@+id/backImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:src="@drawable/ic_arrow_left_black"
+        app:layout_constraintBottom_toBottomOf="@+id/titleText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/titleText" />
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/topGuideline"
         android:layout_width="wrap_content"

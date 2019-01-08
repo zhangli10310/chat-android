@@ -133,7 +133,7 @@ public class MarsServiceProxy implements ServiceConnection {
         try {
             taskHandler.setForeground(foreground);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "setForeground: " + e);
         }
     }
 
@@ -142,7 +142,7 @@ public class MarsServiceProxy implements ServiceConnection {
         try {
             taskHandler.setAccountId(id);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "setAccountId: " + e);
         }
     }
 

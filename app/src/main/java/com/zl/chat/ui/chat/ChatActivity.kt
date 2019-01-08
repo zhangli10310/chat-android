@@ -18,6 +18,7 @@ import com.zl.chat.ui.main.msg.MsgEntity
 import com.zl.core.base.ViewModelActivity
 import com.zl.core.extend.clear
 import com.zl.core.extend.isEmpty
+import com.zl.core.extend.onEnterDown
 import com.zl.core.extend.toTextString
 import kotlinx.android.synthetic.main.activity_chat.*
 
@@ -72,48 +73,61 @@ class ChatActivity : ViewModelActivity<ChatViewModel>() {
         super.setListener()
 
         sendButton.setOnClickListener {
-            if (inputEdit.isEmpty()) {
-                return@setOnClickListener
-            }
-            val msgText = inputEdit.toTextString()
-
-            val task= object : SingleTextMessageTask() {
-
-                override fun request(): Any {
-                    val message = TextMessage().apply {
-                        id = getId()
-                        from = MainApp.instance.user?.id!!
-                        to = mConversationInfo.conversationId
-                        msg = msgText
-                    }
-                    addRecord(message, 2)
-                    return message
-                }
-
-                override fun onTaskEnd(errType: Int, errCode: Int) {
-
-                    for (i in mList.size-1 downTo 0) {
-                        val entity = mList[i]
-                        if (entity.id == id) {
-                            if (errType == 0) {
-                                //成功
-                                entity.status = 0
-                            } else {
-                                //失败
-                                entity.status = 1
-                            }
-                            runOnUiThread {
-                                mAdapter.notifyDataSetChanged()
-                            }
-                        }
-                    }
-                }
-
-            }
-
-            MarsServiceProxy.inst.send(task)
-            inputEdit.clear()
+            sendMsg()
         }
+
+        inputEdit.onEnterDown {
+            sendMsg()
+        }
+
+        backImg.setOnClickListener {
+            finish()
+        }
+    }
+
+    private fun sendMsg() {
+        if (inputEdit.isEmpty()) {
+            return
+        }
+        val msgText = inputEdit.toTextString()
+
+        val task = object : SingleTextMessageTask() {
+
+            override fun request(): Any {
+                val message = TextMessage().apply {
+                    id = getId()
+                    from = MainApp.instance.user?.id!!
+                    to = mConversationInfo.conversationId
+                    msg = msgText
+                }
+                addRecord(message, 2)
+                return message
+            }
+
+            override fun onTaskEnd(errType: Int, errCode: Int) {
+
+                for (i in mList.size - 1 downTo 0) {
+                    val entity = mList[i]
+                    if (entity.id == id) {
+                        if (errType == 0) {
+                            //成功
+                            entity.status = 0
+                        } else {
+                            //失败
+                            entity.status = 1
+                        }
+                        runOnUiThread {
+                            mAdapter.notifyDataSetChanged()
+                        }
+                        break
+                    }
+                }
+            }
+
+        }
+
+        MarsServiceProxy.inst.send(task)
+        inputEdit.clear()
     }
 
     val handler = PushMessageHandler {
@@ -121,7 +135,6 @@ class ChatActivity : ViewModelActivity<ChatViewModel>() {
         if (it.cmdId == Constant.CID_RECEIVE_SINGLE_TEXT_MSG) {
             val msg = it.toMessage(TextMessage::class.java)
             if (msg.from == MainApp.instance.user?.id) {
-                Log.i(TAG, "msg.from == MainApp.instance.user?.id")
                 return@PushMessageHandler
             } else {
                 addRecord(msg)
