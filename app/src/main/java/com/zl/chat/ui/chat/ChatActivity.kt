@@ -79,9 +79,6 @@ class ChatActivity : ViewModelActivity<ChatViewModel>() {
 
             val task= object : SingleTextMessageTask() {
 
-                var index: Int = 0
-
-                //fixme 会调用两次 ，很奇怪
                 override fun request(): Any {
                     val message = TextMessage().apply {
                         id = getId()
@@ -89,22 +86,25 @@ class ChatActivity : ViewModelActivity<ChatViewModel>() {
                         to = mConversationInfo.conversationId
                         msg = msgText
                     }
-                    index = addRecord(message, 2)
+                    addRecord(message, 2)
                     return message
                 }
 
                 override fun onTaskEnd(errType: Int, errCode: Int) {
-                    val entity = mList[index]
-                    if (entity.id == id) {
-                        if (errType == 0) {
-                            //成功
-                            entity.status = 0
-                        } else {
-                            //失败
-                            entity.status = 1
-                        }
-                        runOnUiThread {
-                            mAdapter.notifyDataSetChanged()
+
+                    for (i in mList.size-1 downTo 0) {
+                        val entity = mList[i]
+                        if (entity.id == id) {
+                            if (errType == 0) {
+                                //成功
+                                entity.status = 0
+                            } else {
+                                //失败
+                                entity.status = 1
+                            }
+                            runOnUiThread {
+                                mAdapter.notifyDataSetChanged()
+                            }
                         }
                     }
                 }
@@ -124,26 +124,23 @@ class ChatActivity : ViewModelActivity<ChatViewModel>() {
                 Log.i(TAG, "msg.from == MainApp.instance.user?.id")
                 return@PushMessageHandler
             } else {
-                runOnUiThread {
-                    Log.i(TAG, "add 124: ")
-                    addRecord(msg)
-                }
+                addRecord(msg)
             }
         }
     }
 
-    private fun addRecord(msg: TextMessage, status: Int = 0): Int {
-        Log.i(TAG, "addRecord: ")
-        val entity = ChatMsgEntity().apply {
-            id = msg.id
-            userId = msg.from
-            message = msg.msg
+    private fun addRecord(msg: TextMessage, status: Int = 0) {
+        runOnUiThread {
+            val entity = ChatMsgEntity().apply {
+                id = msg.id
+                userId = msg.from
+                message = msg.msg
+            }
+            entity.status = status
+            mList.add(entity)
+            mAdapter.notifyItemInserted(mList.size - 1)
+            recyclerView.smoothScrollToPosition(mList.size - 1)
         }
-        entity.status = status
-        mList.add(entity)
-        mAdapter.notifyItemInserted(mList.size - 1)
-        recyclerView.smoothScrollToPosition(mList.size - 1)
-        return mList.size - 1
     }
 
     override fun onResume() {
